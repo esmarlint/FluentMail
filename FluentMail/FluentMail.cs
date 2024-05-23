@@ -66,6 +66,69 @@ namespace FluentMail
             return this;
         }
 
+        public BodyElement H1(Action<HeadingElement> config)
+        {
+            var headingElement = new HeadingElement("h1");
+            config(headingElement);
+            AppendChild(headingElement);
+            return this;
+        }
+
+        public BodyElement H2(Action<HeadingElement> config)
+        {
+            var headingElement = new HeadingElement("h2");
+            config(headingElement);
+            AppendChild(headingElement);
+            return this;
+        }
+
+        public BodyElement H3(Action<HeadingElement> config)
+        {
+            var headingElement = new HeadingElement("h3");
+            config(headingElement);
+            AppendChild(headingElement);
+            return this;
+        }
+
+        public BodyElement H4(Action<HeadingElement> config)
+        {
+            var headingElement = new HeadingElement("h4");
+            config(headingElement);
+            AppendChild(headingElement);
+            return this;
+        }
+
+        public BodyElement H5(Action<HeadingElement> config)
+        {
+            var headingElement = new HeadingElement("h5");
+            config(headingElement);
+            AppendChild(headingElement);
+            return this;
+        }
+
+        public BodyElement H6(Action<HeadingElement> config)
+        {
+            var headingElement = new HeadingElement("h6");
+            config(headingElement);
+            AppendChild(headingElement);
+            return this;
+        }
+
+        public BodyElement P(Action<HtmlElement> config)
+        {
+            var paragraphElement = new HtmlElement("p");
+            config(paragraphElement);
+            AppendChild(paragraphElement);
+            return this;
+        }
+
+        public BodyElement Span(Action<SpanElement> config)
+        {
+            var spanElement = new SpanElement();
+            config(spanElement);
+            AppendChild(spanElement);
+            return this;
+        }
     }
 
     public class HtmlElement
