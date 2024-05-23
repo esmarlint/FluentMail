@@ -34,10 +34,38 @@ namespace FluentMail
             return this;
         }
 
+        public FluentMail Body(Action<BodyElement> config)
+        {
+            var bodyElement = new BodyElement();
+            config(bodyElement);
+            _htmlElement.AppendChild(bodyElement);
+            return this;
+        }
+
         public string Render()
         {
             return _htmlElement.Render();
         }
+    }
+
+    public class BodyElement : HtmlElement
+    {
+        public BodyElement() : base("body")
+        {
+        }
+
+        public BodyElement Style(string style)
+        {
+            Attribute("style", style);
+            return this;
+        }
+
+        public BodyElement Text(string text)
+        {
+            AppendChild(new TextElement(text));
+            return this;
+        }
+
     }
 
     public class HtmlElement
