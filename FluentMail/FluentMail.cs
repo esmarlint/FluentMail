@@ -219,6 +219,44 @@ namespace FluentMail
         }
     }
 
+    public class HeadingElement : HtmlElement
+    {
+        public HeadingElement(string tagName) : base(tagName)
+        {
+        }
+
+        public HeadingElement Style(string style)
+        {
+            Attribute("style", style);
+            return this;
+        }
+
+        public HeadingElement Text(string text)
+        {
+            AppendChild(new TextElement(text));
+            return this;
+        }
+    }
+
+    public class SpanElement : HtmlElement
+    {
+        public SpanElement() : base("span")
+        {
+        }
+
+        public SpanElement Style(string style)
+        {
+            Attribute("style", style);
+            return this;
+        }
+
+        public SpanElement Text(string text)
+        {
+            AppendChild(new TextElement(text));
+            return this;
+        }
+    }
+
     public class TextElement : HtmlElement
     {
         private readonly string _text;
@@ -233,4 +271,5 @@ namespace FluentMail
             return _text;
         }
     }
+
 }
