@@ -66,10 +66,34 @@ namespace FluentMail
             return this;
         }
 
+        public BodyElement H1(string text, string style = null)
+        {
+            var headingElement = new HeadingElement("h1");
+            headingElement.Text(text);
+            if (style != null)
+            {
+                headingElement.Style(style);
+            }
+            AppendChild(headingElement);
+            return this;
+        }
+
         public BodyElement H1(Action<HeadingElement> config)
         {
             var headingElement = new HeadingElement("h1");
             config(headingElement);
+            AppendChild(headingElement);
+            return this;
+        }
+
+        public BodyElement H2(string text, string style = null)
+        {
+            var headingElement = new HeadingElement("h2");
+            headingElement.Text(text);
+            if (style != null)
+            {
+                headingElement.Style(style);
+            }
             AppendChild(headingElement);
             return this;
         }
@@ -82,10 +106,34 @@ namespace FluentMail
             return this;
         }
 
+        public BodyElement H3(string text, string style = null)
+        {
+            var headingElement = new HeadingElement("h3");
+            headingElement.Text(text);
+            if (style != null)
+            {
+                headingElement.Style(style);
+            }
+            AppendChild(headingElement);
+            return this;
+        }
+
         public BodyElement H3(Action<HeadingElement> config)
         {
             var headingElement = new HeadingElement("h3");
             config(headingElement);
+            AppendChild(headingElement);
+            return this;
+        }
+
+        public BodyElement H4(string text, string style = null)
+        {
+            var headingElement = new HeadingElement("h4");
+            headingElement.Text(text);
+            if (style != null)
+            {
+                headingElement.Style(style);
+            }
             AppendChild(headingElement);
             return this;
         }
@@ -98,10 +146,34 @@ namespace FluentMail
             return this;
         }
 
+        public BodyElement H5(string text, string style = null)
+        {
+            var headingElement = new HeadingElement("h5");
+            headingElement.Text(text);
+            if (style != null)
+            {
+                headingElement.Style(style);
+            }
+            AppendChild(headingElement);
+            return this;
+        }
+
         public BodyElement H5(Action<HeadingElement> config)
         {
             var headingElement = new HeadingElement("h5");
             config(headingElement);
+            AppendChild(headingElement);
+            return this;
+        }
+
+        public BodyElement H6(string text, string style = null)
+        {
+            var headingElement = new HeadingElement("h6");
+            headingElement.Text(text);
+            if (style != null)
+            {
+                headingElement.Style(style);
+            }
             AppendChild(headingElement);
             return this;
         }
@@ -234,6 +306,14 @@ namespace FluentMail
         public HeadingElement Text(string text)
         {
             AppendChild(new TextElement(text));
+            return this;
+        }
+
+        public HeadingElement Span(Action<SpanElement> config)
+        {
+            var spanElement = new SpanElement();
+            config(spanElement);
+            AppendChild(spanElement);
             return this;
         }
     }
