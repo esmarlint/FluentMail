@@ -201,6 +201,18 @@ namespace FluentMail
             AppendChild(spanElement);
             return this;
         }
+
+        public BodyElement Span(string text, string style = null)
+        {
+            var headingElement = new HeadingElement("span");
+            headingElement.Text(text);
+            if (style != null)
+            {
+                headingElement.Style(style);
+            }
+            AppendChild(headingElement);
+            return this;
+        }
     }
 
     public class HtmlElement
