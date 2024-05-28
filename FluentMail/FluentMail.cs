@@ -213,6 +213,43 @@ namespace FluentMail
             AppendChild(headingElement);
             return this;
         }
+
+        public BodyElement Img(string src, string alt = null, string style = null)
+        {
+            var imgElement = new ImageElement();
+            imgElement.Attribute("src", src);
+            if (alt != null)
+            {
+                imgElement.Attribute("alt", alt);
+            }
+            if (style != null)
+            {
+                imgElement.Style(style);
+            }
+            AppendChild(imgElement);
+            return this;
+        }
+
+        public BodyElement A(string text, string href="#", string style = null)
+        {
+            var linkElement = new LinkElement();
+            linkElement.Attribute("href", href);
+            linkElement.Text(text);
+            if (style != null)
+            {
+                linkElement.Style(style);
+            }
+            AppendChild(linkElement);
+            return this;
+        }
+
+        public BodyElement Ol(Action<ListElement> config)
+        {
+            var listElement = new ListElement("ol");
+            config(listElement);
+            AppendChild(listElement);
+            return this;
+        }
     }
 
     public class HtmlElement
@@ -231,6 +268,12 @@ namespace FluentMail
         public virtual HtmlElement Attribute(string name, string value)
         {
             Attributes[name] = value;
+            return this;
+        }
+
+        public HtmlElement Style(string style)
+        {
+            Attribute("style", style);
             return this;
         }
 
@@ -364,4 +407,55 @@ namespace FluentMail
         }
     }
 
+    public class ImageElement : HtmlElement
+    {
+        public ImageElement() : base("img")
+        {
+        }
+    }
+
+    public class LinkElement : HtmlElement
+    {
+        public LinkElement() : base("a")
+        {
+        }
+
+        public LinkElement Text(string text)
+        {
+            AppendChild(new TextElement(text));
+            return this;
+        }
+    }
+
+    public class ListElement : HtmlElement
+    {
+        public ListElement(string tagName) : base(tagName)
+        {
+        }
+
+        public ListElement Li(string text, string style = null)
+        {
+            var listItemElement = new ListItemElement();
+            listItemElement.Text(text);
+            if (style != null)
+            {
+                listItemElement.Style(style);
+            }
+            AppendChild(listItemElement);
+            return this;
+        }
+    }
+
+    public class ListItemElement : HtmlElement
+    {
+        public ListItemElement() : base("li")
+        {
+        }
+
+        public ListItemElement Text(string text)
+        {
+            AppendChild(new TextElement(text));
+            return this;
+        }
+    }
 }
