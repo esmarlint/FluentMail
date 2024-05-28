@@ -6,7 +6,7 @@
         {
         }
 
-        public ListElement Li(string text, string style = null)
+        public ListElement Li(string text, string? style = null)
         {
             var listItemElement = new ListItemElement();
             listItemElement.Text(text);

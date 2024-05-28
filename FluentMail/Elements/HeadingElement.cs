@@ -6,12 +6,6 @@
         {
         }
 
-        public HeadingElement Style(string style)
-        {
-            Attribute("style", style);
-            return this;
-        }
-
         public HeadingElement Text(string text)
         {
             AppendChild(new TextElement(text));

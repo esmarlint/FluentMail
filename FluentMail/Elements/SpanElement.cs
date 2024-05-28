@@ -6,12 +6,6 @@
         {
         }
 
-        public SpanElement Style(string style)
-        {
-            Attribute("style", style);
-            return this;
-        }
-
         public SpanElement Text(string text)
         {
             AppendChild(new TextElement(text));

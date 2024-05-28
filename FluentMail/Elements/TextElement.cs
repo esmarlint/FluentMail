@@ -1,4 +1,4 @@
-﻿namespace FluentMail
+﻿namespace FluentMail.Elements
 {
     public class TextElement : HtmlElement
     {
