@@ -205,42 +205,22 @@
             return this;
         }
     }
-
     public class RowElement : HtmlElement
     {
-        private int _columnCount;
-
-        public RowElement() : base("table")
+        public RowElement() : base("tr")
         {
-            Attribute("border", "0")
-                .Attribute("cellpadding", "0")
-                .Attribute("cellspacing", "0")
-                .Attribute("width", "100%");
-            _columnCount = 0;
         }
 
         public RowElement Column(Action<ColumnElement> config)
         {
             var columnElement = new ColumnElement();
             config(columnElement);
-            _columnCount++;
             AppendChild(columnElement);
             return this;
         }
 
         public override string Render()
         {
-            if (_columnCount > 0)
-            {
-                var columnWidth = 100 / _columnCount;
-                foreach (var column in Children)
-                {
-                    if (column is ColumnElement columnElement && !columnElement.Attributes.ContainsKey("width"))
-                    {
-                        columnElement.Width(columnWidth);
-                    }
-                }
-            }
             return $"<tr>{base.Render()}</tr>";
         }
     }
@@ -249,8 +229,6 @@
     {
         public ColumnElement() : base("td")
         {
-            Attribute("align", "left")
-                .Attribute("valign", "top");
         }
 
         public ColumnElement Width(int width)
@@ -259,214 +237,60 @@
             return this;
         }
 
-        public ColumnElement Button(string text, string url, string? style = null)
+        public ColumnElement H1(string text, string? style = "")
         {
+            var h1Element = new HtmlElement("h1");
+            h1Element.Style(style);
+            h1Element.AppendChild(new TextElement(text));
+            AppendChild(h1Element);
+            return this;
+        }
+
+        public ColumnElement BackgroundColor(string color)
+        {
+            Style($"background-color: {color};");
+            return this;
+        }
+
+        // Métodos similares para H2, H3, H4, H5, H6 y Paragraph
+
+        public ColumnElement Button(string text, string url)
+        {
+            var buttonContainer = new HtmlElement("p");
+            buttonContainer.Style("text-align: center;");
             var buttonElement = new HtmlElement("a");
-            buttonElement.Attribute("href", url)
-                .Attribute("style", $"display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 4px; {style}")
-                .AppendChild(new TextElement(text));
-            AppendChild(buttonElement);
+            buttonElement.Attribute("href", url);
+            buttonElement.Style("display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 4px;");
+            buttonElement.AppendChild(new TextElement(text));
+            buttonContainer.AppendChild(buttonElement);
+            AppendChild(buttonContainer);
             return this;
         }
 
-        public ColumnElement H1(string text, string? style = null)
-        {
-            var headingElement = new HeadingElement("h1");
-            headingElement.Text(text);
-            if (style != null)
-            {
-                headingElement.Style(style);
-            }
-            AppendChild(headingElement);
-            return this;
-        }
-
-        public ColumnElement H1(Action<HeadingElement> config)
-        {
-            var headingElement = new HeadingElement("h1");
-            config(headingElement);
-            AppendChild(headingElement);
-            return this;
-        }
-
-        public ColumnElement H2(string text, string? style = null)
-        {
-            var headingElement = new HeadingElement("h2");
-            headingElement.Text(text);
-            if (style != null)
-            {
-                headingElement.Style(style);
-            }
-            AppendChild(headingElement);
-            return this;
-        }
-
-        public ColumnElement H2(Action<HeadingElement> config)
-        {
-            var headingElement = new HeadingElement("h2");
-            config(headingElement);
-            AppendChild(headingElement);
-            return this;
-        }
-
-        public ColumnElement H3(string text, string? style = null)
-        {
-            var headingElement = new HeadingElement("h3");
-            headingElement.Text(text);
-            if (style != null)
-            {
-                headingElement.Style(style);
-            }
-            AppendChild(headingElement);
-            return this;
-        }
-
-        public ColumnElement H3(Action<HeadingElement> config)
-        {
-            var headingElement = new HeadingElement("h3");
-            config(headingElement);
-            AppendChild(headingElement);
-            return this;
-        }
-
-        public ColumnElement H4(string text, string? style = null)
-        {
-            var headingElement = new HeadingElement("h4");
-            headingElement.Text(text);
-            if (style != null)
-            {
-                headingElement.Style(style);
-            }
-            AppendChild(headingElement);
-            return this;
-        }
-
-        public ColumnElement H4(Action<HeadingElement> config)
-        {
-            var headingElement = new HeadingElement("h4");
-            config(headingElement);
-            AppendChild(headingElement);
-            return this;
-        }
-
-        public ColumnElement H5(string text, string? style = null)
-        {
-            var headingElement = new HeadingElement("h5");
-            headingElement.Text(text);
-            if (style != null)
-            {
-                headingElement.Style(style);
-            }
-            AppendChild(headingElement);
-            return this;
-        }
-
-        public ColumnElement H5(Action<HeadingElement> config)
-        {
-            var headingElement = new HeadingElement("h5");
-            config(headingElement);
-            AppendChild(headingElement);
-            return this;
-        }
-
-        public ColumnElement H6(string text, string? style = null)
-        {
-            var headingElement = new HeadingElement("h6");
-            headingElement.Text(text);
-            if (style != null)
-            {
-                headingElement.Style(style);
-            }
-            AppendChild(headingElement);
-            return this;
-        }
-
-        public ColumnElement H6(Action<HeadingElement> config)
-        {
-            var headingElement = new HeadingElement("h6");
-            config(headingElement);
-            AppendChild(headingElement);
-            return this;
-        }
-
-        public ColumnElement P(Action<HtmlElement> config)
+        public ColumnElement Paragraph(string text, string style = "")
         {
             var paragraphElement = new HtmlElement("p");
-            config(paragraphElement);
+            paragraphElement.Style(style);
+            paragraphElement.AppendChild(new TextElement(text));
             AppendChild(paragraphElement);
             return this;
         }
 
-        public ColumnElement Span(Action<SpanElement> config)
+        public RowElement Row(Action<RowElement> config)
         {
-            var spanElement = new SpanElement();
-            config(spanElement);
-            AppendChild(spanElement);
-            return this;
-        }
-
-        public ColumnElement Span(string text, string? style = null)
-        {
-            var headingElement = new HeadingElement("span");
-            headingElement.Text(text);
-            if (style != null)
-            {
-                headingElement.Style(style);
-            }
-            AppendChild(headingElement);
-            return this;
-        }
-
-        public ColumnElement Img(string src, string? alt = null, string? style = null)
-        {
-            var imgElement = new ImageElement();
-            imgElement.Attribute("src", src);
-            if (alt != null)
-            {
-                imgElement.Attribute("alt", alt);
-            }
-            if (style != null)
-            {
-                imgElement.Style(style);
-            }
-            AppendChild(imgElement);
-            return this;
-        }
-
-        public ColumnElement A(string text, string href = "#", string? style = null)
-        {
-            var linkElement = new LinkElement();
-            linkElement.Attribute("href", href);
-            linkElement.Text(text);
-            if (style != null)
-            {
-                linkElement.Style(style);
-            }
-            AppendChild(linkElement);
-            return this;
-        }
-
-        public ColumnElement Ol(Action<ListElement> config)
-        {
-            var listElement = new ListElement("ol");
-            config(listElement);
-            AppendChild(listElement);
-            return this;
-        }
-
-        public ColumnElement Row(Action<RowElement> config)
-        {
+            var tableElement = new HtmlElement("table");
+            tableElement.Attribute("width", "100%");
             var rowElement = new RowElement();
             config(rowElement);
-            AppendChild(rowElement);
-            return this;
-        }
-
-        public ColumnElement Text(string text)
-        {
-            AppendChild(new TextElement(text));
-            return this;
+            tableElement.AppendChild(rowElement);
+            AppendChild(tableElement);
+            return rowElement;
         }
     }
-
+    public enum TextAlign
+    {
+        Left,
+        Center,
+        Right
+    }
 }
