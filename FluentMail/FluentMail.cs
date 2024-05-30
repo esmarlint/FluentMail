@@ -9,11 +9,27 @@ using FluentMail.Elements;
 
 namespace FluentMail
 {
+
+    interface IHtmlElement{
+        string Build();
+    }
+
+    public abstract class HtmlElement : IHtmlElement
+    {
+        protected StringBuilder ContentBuilder { get; } = new StringBuilder();
+        public abstract string Build();
+
+        public override string ToString()
+        {
+            return Build();
+        }
+    }
+
     public class FluentMail
     {
         private string lang;
-        private string headContent;
         private string bodyContent;
+        private HeadBuilder headBuilder;
 
         public FluentMail Html(Action<HtmlConfig> html)
         {
@@ -25,9 +41,8 @@ namespace FluentMail
 
         public FluentMail Head(Action<HeadBuilder> head)
         {
-            var headBuilder = new HeadBuilder();
+            headBuilder = new HeadBuilder();
             head(headBuilder);
-            this.headContent = headBuilder.Build();
             return this;
         }
 
@@ -42,16 +57,16 @@ namespace FluentMail
         public string Build()
         {
             var builder = new StringBuilder();
-            builder.AppendFormat(@"
+            builder.AppendLine($@"
             <!DOCTYPE html>
-            <html lang=""{0}"">
+            <html lang=""{lang}"">
             <head>
-                {1}
+                {headBuilder.ToString()}
             </head>
             <body>
-                {2}
+                {bodyContent}
             </body>
-            </html>", lang, headContent, bodyContent);
+            </html>");
             return builder.ToString();
         }
     }
@@ -67,10 +82,9 @@ namespace FluentMail
         }
     }
 
-    public class HeadBuilder
+    public class HeadBuilder: HtmlElement
     {
-        private string title;
-        private List<string> metas = new List<string>();
+        public string title;
 
         public HeadBuilder Title(string title)
         {
@@ -80,101 +94,179 @@ namespace FluentMail
 
         public HeadBuilder Meta(string name, string content)
         {
-            metas.Add($@"<meta name=""{name}"" content=""{content}"">");
+            ContentBuilder.AppendLine($@"<meta name=""{name}"" content=""{content}"">");
             return this;
         }
 
         public HeadBuilder Meta(string charset)
         {
-            metas.Add($@"<meta charset=""{charset}"">");
+            ContentBuilder.AppendLine($@"<meta charset=""{charset}"">");
             return this;
         }
 
-        public string Build()
+        public override string Build()
         {
-            var metaTags = string.Join("\n    ", metas);
-            return $"<title>{title}</title>\n    {metaTags}";
+            ContentBuilder.Insert(0, $@"<title>{title}</title>");
+            return ContentBuilder.ToString();
         }
     }
 
     public class BodyBuilder
     {
-        private readonly StringBuilder rowsBuilder = new StringBuilder();
+        private List<string> rows = new List<string>();
 
         public BodyBuilder Row(Action<RowBuilder> row)
         {
             var rowBuilder = new RowBuilder();
             row(rowBuilder);
-            rowsBuilder.Append(rowBuilder.Build());
+            rows.Add(rowBuilder.Build());
             return this;
         }
 
         public string Build()
         {
-            return rowsBuilder.ToString();
+            return string.Join("\n", rows);
         }
     }
 
+
     public class RowBuilder
     {
-        private readonly StringBuilder columnsBuilder = new StringBuilder();
+        private string backgroundColor;
+        private string style;
+        private List<ColumnBuilder> columns = new List<ColumnBuilder>();
+
+        public RowBuilder BackgroundColor(string color)
+        {
+            this.backgroundColor = color;
+            return this;
+        }
+
+        public RowBuilder Style(string style)
+        {
+            this.style = style;
+            return this;
+        }
+
+        public RowBuilder AddStyle(string style)
+        {
+            if (this.style == null)
+                this.style = style;
+            else
+                this.style += style;
+            return this;
+        }
 
         public RowBuilder Column(Action<ColumnBuilder> column)
         {
             var columnBuilder = new ColumnBuilder();
             column(columnBuilder);
-            columnsBuilder.Append(columnBuilder.Build());
+            columns.Add(columnBuilder);
             return this;
         }
 
         public string Build()
         {
-            return $"<tr>{columnsBuilder}</tr>";
+            int specifiedWidthColumns = columns.Count(col => !string.IsNullOrEmpty(col.GetWidth()));
+            int unspecifiedWidthColumns = columns.Count - specifiedWidthColumns;
+
+            string autoWidth = unspecifiedWidthColumns > 0 ? $"{100 / unspecifiedWidthColumns}%" : "100%";
+
+            var columnHtml = columns.Select(col =>
+            {
+                if (string.IsNullOrEmpty(col.GetWidth()))
+                {
+                    col.Width(autoWidth);
+                }
+                return col.Build();
+            });
+
+            var rowStyle = !string.IsNullOrEmpty(backgroundColor) ? $"background-color: {backgroundColor};" : "";
+
+            var builder = new StringBuilder();
+            builder.AppendLine($@"
+        <table width=""100%"" cellpadding=""0"" cellspacing=""0"" border=""0"" style=""table-layout: fixed; border-collapse: collapse;"">
+            <tr style=""{rowStyle} {style}"">");
+            builder.AppendLine(string.Join("\n", columnHtml));
+            builder.AppendLine("</tr></table>");
+
+            return builder.ToString();
         }
     }
 
     public class ColumnBuilder
     {
-        private readonly StringBuilder contentBuilder = new StringBuilder();
+        private string backgroundColor;
+        private string style;
+        private StringBuilder content = new StringBuilder();
+        private string width;
+        private List<string> subRows = new List<string>();
+
+        public ColumnBuilder BackgroundColor(string color)
+        {
+            this.backgroundColor = color;
+            return this;
+        }
+
+        public ColumnBuilder Style(string style)
+        {
+            this.style = style;
+            return this;
+        }
 
         public ColumnBuilder Image(string url, string alt = "", string style = "")
         {
-            contentBuilder.AppendFormat(@"<img src=""{0}"" alt=""{1}"" style=""{2}""/>", url, alt, style);
+            content.AppendLine($@"<img src=""{url}"" alt=""{alt}"" style=""{style}""/>");
             return this;
+        }
+
+        public ColumnBuilder Width(string width)
+        {
+            this.width = width;
+            return this;
+        }
+
+        public string GetWidth()
+        {
+            return this.width;
         }
 
         public ColumnBuilder H1(string text, string style = "")
         {
-            contentBuilder.AppendFormat(@"<h1 style=""{0}"">{1}</h1>", style, text);
+            content.AppendLine($@"<h1 style=""{style}"">{text}</h1>");
             return this;
         }
 
         public ColumnBuilder Paragraph(string text, string style = "")
         {
-            contentBuilder.AppendFormat(@"<p style=""{0}"">{1}</p>", style, text);
+            content.AppendLine($@"<p style=""{style}"">{text}</p>");
             return this;
         }
 
         public ColumnBuilder Button(string text, string url, string style = "")
         {
-            contentBuilder.AppendFormat(@"<a href=""{0}"" style=""{1}"">{2}</a>", url, style, text);
+            content.AppendLine($@"<a href=""{url}"" style=""{style}"">{text}</a>");
+            return this;
+        }
+
+        public ColumnBuilder Row(Action<RowBuilder> row)
+        {
+            var rowBuilder = new RowBuilder();
+            row(rowBuilder);
+            subRows.Add(rowBuilder.Build());
             return this;
         }
 
         public string Build()
         {
-            string backgroundColor = "white";
-            string widthStyle = "width:100%";
-            string style = "";
-            string subRowsContent = "";
-
+            var widthStyle = !string.IsNullOrEmpty(width) ? $"width: {width};" : "";
+            var subRowsContent = string.Join("\n", subRows);
             var builder = new StringBuilder();
-            builder.AppendFormat(@"
-                <td style=""background-color: {0}; vertical-align: top; {1} {2}"">
-                    {3}
-                    {4}
-                </td>", backgroundColor, widthStyle, style, contentBuilder.ToString(), subRowsContent);
-
+            builder.AppendLine($@"
+        <td style=""background-color: {backgroundColor}; vertical-align: top; {widthStyle} {style}"">
+            {content.ToString()}
+            {subRowsContent}
+        </td>");
             return builder.ToString();
         }
     }
