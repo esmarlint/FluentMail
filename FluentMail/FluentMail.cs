@@ -29,6 +29,7 @@ namespace FluentMail
     {
         private string lang;
         private string bodyContent;
+        private string BodyBuilder;
         private HeadBuilder headBuilder;
 
         public FluentMail Html(Action<HtmlConfig> html)
@@ -111,21 +112,19 @@ namespace FluentMail
         }
     }
 
-    public class BodyBuilder
+    public class BodyBuilder: HtmlElement
     {
-        private List<string> rows = new List<string>();
-
         public BodyBuilder Row(Action<RowBuilder> row)
         {
             var rowBuilder = new RowBuilder();
             row(rowBuilder);
-            rows.Add(rowBuilder.Build());
+            ContentBuilder.AppendLine(rowBuilder.Build());
             return this;
         }
 
-        public string Build()
+        public override string Build()
         {
-            return string.Join("\n", rows);
+            return ContentBuilder.ToString();
         }
     }
 
@@ -271,4 +270,39 @@ namespace FluentMail
         }
     }
 
+    public class Element
+    {
+        public Element()
+        {
+
+        }
+        public string Content { get; set; }
+
+        public string html { get; set; }
+
+        public Element P(string content)
+        {
+            Content += $"<p>{content}</p>";
+            return this;
+        }
+
+        public Element P(Action<Element> element) {
+            var random = new Element();
+            element(random);
+            Content += $"<p>{random.Build()}</p>";
+            return this;
+        }
+
+        public Element Text(string content)
+        {
+            Content += $"{content}";
+            return this;
+        }
+
+        public string Build()
+        {
+            return Content;
+        }
+    }
 }
+
