@@ -191,11 +191,10 @@ namespace FluentMail
         }
     }
 
-    public class ColumnBuilder
+    public class ColumnBuilder: HtmlElement
     {
         private string backgroundColor;
         private string style;
-        private StringBuilder content = new StringBuilder();
         private string width;
         private List<string> subRows = new List<string>();
 
@@ -213,7 +212,7 @@ namespace FluentMail
 
         public ColumnBuilder Image(string url, string alt = "", string style = "")
         {
-            content.AppendLine($@"<img src=""{url}"" alt=""{alt}"" style=""{style}""/>");
+            ContentBuilder.AppendLine($@"<img src=""{url}"" alt=""{alt}"" style=""{style}""/>");
             return this;
         }
 
@@ -230,19 +229,19 @@ namespace FluentMail
 
         public ColumnBuilder H1(string text, string style = "")
         {
-            content.AppendLine($@"<h1 style=""{style}"">{text}</h1>");
+            ContentBuilder.AppendLine($@"<h1 style=""{style}"">{text}</h1>");
             return this;
         }
 
         public ColumnBuilder Paragraph(string text, string style = "")
         {
-            content.AppendLine($@"<p style=""{style}"">{text}</p>");
+            ContentBuilder.AppendLine($@"<p style=""{style}"">{text}</p>");
             return this;
         }
 
         public ColumnBuilder Button(string text, string url, string style = "")
         {
-            content.AppendLine($@"<a href=""{url}"" style=""{style}"">{text}</a>");
+            ContentBuilder.AppendLine($@"<a href=""{url}"" style=""{style}"">{text}</a>");
             return this;
         }
 
@@ -254,16 +253,16 @@ namespace FluentMail
             return this;
         }
 
-        public string Build()
+        public override string Build()
         {
             var widthStyle = !string.IsNullOrEmpty(width) ? $"width: {width};" : "";
             var subRowsContent = string.Join("\n", subRows);
             var builder = new StringBuilder();
             builder.AppendLine($@"
-        <td style=""background-color: {backgroundColor}; vertical-align: top; {widthStyle} {style}"">
-            {content.ToString()}
-            {subRowsContent}
-        </td>");
+                <td style=""background-color: {backgroundColor}; vertical-align: top; {widthStyle} {style}"">
+                    {ContentBuilder.ToString()}
+                    {subRowsContent}
+                </td>");
             return builder.ToString();
         }
     }
