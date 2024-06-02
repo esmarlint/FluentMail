@@ -28,8 +28,7 @@ namespace FluentMail
     public class FluentMail
     {
         private string lang;
-        private string bodyContent;
-        private string BodyBuilder;
+        private BodyBuilder bodyBuilder;
         private HeadBuilder headBuilder;
 
         public FluentMail Html(Action<HtmlConfig> html)
@@ -49,9 +48,8 @@ namespace FluentMail
 
         public FluentMail Body(Action<BodyBuilder> body)
         {
-            var bodyBuilder = new BodyBuilder();
+            bodyBuilder = new BodyBuilder();
             body(bodyBuilder);
-            this.bodyContent = bodyBuilder.Build();
             return this;
         }
 
@@ -65,7 +63,7 @@ namespace FluentMail
                 {headBuilder.ToString()}
             </head>
             <body>
-                {bodyContent}
+                {bodyBuilder.Build()}
             </body>
             </html>");
             return builder.ToString();
