@@ -127,7 +127,7 @@ namespace FluentMail
     }
 
 
-    public class RowBuilder
+    public class RowBuilder: HtmlElement
     {
         private string backgroundColor;
         private string style;
@@ -162,7 +162,7 @@ namespace FluentMail
             return this;
         }
 
-        public string Build()
+        public override string Build()
         {
             int specifiedWidthColumns = columns.Count(col => !string.IsNullOrEmpty(col.GetWidth()));
             int unspecifiedWidthColumns = columns.Count - specifiedWidthColumns;
@@ -179,15 +179,13 @@ namespace FluentMail
             });
 
             var rowStyle = !string.IsNullOrEmpty(backgroundColor) ? $"background-color: {backgroundColor};" : "";
+            ContentBuilder.AppendLine($@"
+                <table width=""100%"" cellpadding=""0"" cellspacing=""0"" border=""0"" style=""table-layout: fixed; border-collapse: collapse;"">
+                <tr style=""{rowStyle} {style}"">");
+            ContentBuilder.AppendLine(string.Join("\n", columnHtml));
+            ContentBuilder.AppendLine("</tr></table>");
 
-            var builder = new StringBuilder();
-            builder.AppendLine($@"
-        <table width=""100%"" cellpadding=""0"" cellspacing=""0"" border=""0"" style=""table-layout: fixed; border-collapse: collapse;"">
-            <tr style=""{rowStyle} {style}"">");
-            builder.AppendLine(string.Join("\n", columnHtml));
-            builder.AppendLine("</tr></table>");
-
-            return builder.ToString();
+            return ContentBuilder.ToString();
         }
     }
 
