@@ -267,40 +267,5 @@ namespace FluentMail
             return builder.ToString();
         }
     }
-
-    public class Element
-    {
-        public Element()
-        {
-
-        }
-        public string Content { get; set; }
-
-        public string html { get; set; }
-
-        public Element P(string content)
-        {
-            Content += $"<p>{content}</p>";
-            return this;
-        }
-
-        public Element P(Action<Element> element) {
-            var random = new Element();
-            element(random);
-            Content += $"<p>{random.Build()}</p>";
-            return this;
-        }
-
-        public Element Text(string content)
-        {
-            Content += $"{content}";
-            return this;
-        }
-
-        public string Build()
-        {
-            return Content;
-        }
-    }
 }
 
