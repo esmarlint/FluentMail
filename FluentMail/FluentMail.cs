@@ -16,13 +16,38 @@ namespace FluentMail
 
     public abstract class HtmlElement : IHtmlElement
     {
-        protected StringBuilder ContentBuilder { get; } = new StringBuilder();
+        public string style;
+        public StringBuilder ContentBuilder { get; } = new StringBuilder();
+        public string backgroundColor;
+
         public abstract string Build();
 
         public override string ToString()
         {
             return Build();
         }
+
+        public HtmlElement Style(string style)
+        {
+            style = style;
+            return this;
+        }
+
+        public HtmlElement AddStyle(string style)
+        {
+            if (this.style == null)
+                this.style = style;
+            else
+                this.style += style;
+            return this;
+        }
+
+        public HtmlElement BackgroundColor(string color)
+        {
+            this.backgroundColor = color;
+            return this;
+        }
+
     }
 
     public class FluentMail
@@ -129,30 +154,8 @@ namespace FluentMail
 
     public class RowBuilder: HtmlElement
     {
-        private string backgroundColor;
-        private string style;
         private List<ColumnBuilder> columns = new List<ColumnBuilder>();
 
-        public RowBuilder BackgroundColor(string color)
-        {
-            this.backgroundColor = color;
-            return this;
-        }
-
-        public RowBuilder Style(string style)
-        {
-            this.style = style;
-            return this;
-        }
-
-        public RowBuilder AddStyle(string style)
-        {
-            if (this.style == null)
-                this.style = style;
-            else
-                this.style += style;
-            return this;
-        }
 
         public RowBuilder Column(Action<ColumnBuilder> column)
         {
