@@ -19,6 +19,8 @@ namespace FluentMail
         public string style;
         public StringBuilder ContentBuilder { get; } = new StringBuilder();
         public string backgroundColor;
+        public string padding;
+
 
         public abstract string Build();
 
@@ -39,6 +41,12 @@ namespace FluentMail
                 this.style = style;
             else
                 this.style += style;
+            return this;
+        }
+
+        public HtmlElement Padding(string padding)
+        {
+            this.padding = padding;
             return this;
         }
 
@@ -181,10 +189,13 @@ namespace FluentMail
                 return col.Build();
             });
 
+            var tableStyle = !string.IsNullOrEmpty(padding) ? $"padding: {padding};" : "";  // <-- Añadir esta línea
+            tableStyle += !string.IsNullOrEmpty(style) ? style : "";  // <-- Modificar esta línea
+
             var rowStyle = !string.IsNullOrEmpty(backgroundColor) ? $"background-color: {backgroundColor};" : "";
             ContentBuilder.AppendLine($@"
-                <table width=""100%"" cellpadding=""0"" cellspacing=""0"" border=""0"" style=""table-layout: fixed; border-collapse: collapse;"">
-                <tr style=""{rowStyle} {style}"">");
+            <table width=""100%"" cellpadding=""0"" cellspacing=""0"" border=""0"" style=""table-layout: fixed; border-collapse: collapse; {tableStyle}"">  // <-- Modificar esta línea
+            <tr style=""{rowStyle}"">");
             ContentBuilder.AppendLine(string.Join("\n", columnHtml));
             ContentBuilder.AppendLine("</tr></table>");
 
