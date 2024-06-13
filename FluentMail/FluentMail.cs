@@ -245,6 +245,41 @@ namespace FluentMail
             return this;
         }
 
+        public ColumnBuilder H1(string text, string style = "")
+        {
+            ContentBuilder.AppendLine($@"<h1 style=""{style}"">{text}</h1>");
+            return this;
+        }
+
+        public ColumnBuilder H2(string text, string style = "")
+        {
+            ContentBuilder.AppendLine($@"<h2 style=""{style}"">{text}</h2>");
+            return this;
+        }
+
+        public ColumnBuilder H3(string text, string style = "")
+        {
+            ContentBuilder.AppendLine($@"<h3 style=""{style}"">{text}</h3>");
+            return this;
+        }
+
+        public ColumnBuilder H4(string text, string style = "")
+        {
+            ContentBuilder.AppendLine($@"<h4 style=""{style}"">{text}</h4>");
+            return this;
+        }
+
+        public ColumnBuilder H5(string text, string style = "")
+        {
+            ContentBuilder.AppendLine($@"<h5 style=""{style}"">{text}</h5>");
+            return this;
+        }
+
+        public override string ToString()
+        {
+            return ContentBuilder.ToString();
+        }
+
         public ColumnBuilder Paragraph(string text, string style = "")
         {
             ContentBuilder.AppendLine($@"<p style=""{style}"">{text}</p>");
