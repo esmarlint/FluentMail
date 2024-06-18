@@ -245,12 +245,6 @@ namespace FluentMail
             return this;
         }
 
-        public ColumnBuilder H1(string text, string style = "")
-        {
-            ContentBuilder.AppendLine($@"<h1 style=""{style}"">{text}</h1>");
-            return this;
-        }
-
         public ColumnBuilder H2(string text, string style = "")
         {
             ContentBuilder.AppendLine($@"<h2 style=""{style}"">{text}</h2>");
