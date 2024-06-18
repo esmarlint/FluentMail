@@ -16,10 +16,10 @@ namespace FluentMail
 
     public abstract class HtmlElement : IHtmlElement
     {
-        public string style;
-        public StringBuilder ContentBuilder { get; } = new StringBuilder();
-        public string backgroundColor;
-        public string padding;
+        protected string style;
+        protected StringBuilder ContentBuilder { get; } = new StringBuilder();
+        protected string backgroundColor;
+        protected string padding;
 
 
         public abstract string Build();
