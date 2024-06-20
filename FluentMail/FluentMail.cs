@@ -180,27 +180,39 @@ namespace FluentMail
 
             string autoWidth = unspecifiedWidthColumns > 0 ? $"{100 / unspecifiedWidthColumns}%" : "100%";
 
-            var columnHtml = columns.Select(col =>
+            foreach (var col in columns)
             {
                 if (string.IsNullOrEmpty(col.GetWidth()))
                 {
                     col.Width(autoWidth);
                 }
-                return col.Build();
-            });
+            }
 
-            var tableStyle = !string.IsNullOrEmpty(padding) ? $"padding: {padding};" : "";  // <-- Añadir esta línea
-            tableStyle += !string.IsNullOrEmpty(style) ? style : "";  // <-- Modificar esta línea
+            var tableStyle = $"table-layout: fixed; border-collapse: collapse; {style} background-color: {backgroundColor};";
 
-            var rowStyle = !string.IsNullOrEmpty(backgroundColor) ? $"background-color: {backgroundColor};" : "";
             ContentBuilder.AppendLine($@"
-            <table width=""100%"" cellpadding=""0"" cellspacing=""0"" border=""0"" style=""table-layout: fixed; border-collapse: collapse; {tableStyle}"">  // <-- Modificar esta línea
-            <tr style=""{rowStyle}"">");
-            ContentBuilder.AppendLine(string.Join("\n", columnHtml));
-            ContentBuilder.AppendLine("</tr></table>");
+    <table width=""100%"" cellpadding=""0"" cellspacing=""0"" border=""0"" style=""{tableStyle}"">
+        <tr>
+            <td style=""{(string.IsNullOrEmpty(padding) ? "" : $"padding: {padding};")}"">
+                <table width=""100%"" cellpadding=""0"" cellspacing=""0"" border=""0"">
+                    <tr>");
+
+            foreach (var column in columns)
+            {
+                ContentBuilder.AppendLine(column.Build());
+            }
+
+            ContentBuilder.AppendLine(@"
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>");
 
             return ContentBuilder.ToString();
         }
+
+
     }
 
     public class ColumnBuilder: HtmlElement
@@ -297,15 +309,19 @@ namespace FluentMail
         public override string Build()
         {
             var widthStyle = !string.IsNullOrEmpty(width) ? $"width: {width};" : "";
-            var subRowsContent = string.Join("\n", subRows);
+            var paddingStyle = !string.IsNullOrEmpty(padding) ? $"padding: {padding};" : "";
+            var backgroundColorStyle = !string.IsNullOrEmpty(backgroundColor) ? $"background-color: {backgroundColor};" : "";
+
             var builder = new StringBuilder();
             builder.AppendLine($@"
-                <td style=""background-color: {backgroundColor}; vertical-align: top; {widthStyle} {style}"">
-                    {ContentBuilder.ToString()}
-                    {subRowsContent}
-                </td>");
+        <td style=""{backgroundColorStyle} vertical-align: top; {widthStyle} {paddingStyle}"">
+            {ContentBuilder}
+        </td>
+    ");
             return builder.ToString();
         }
+
+
     }
 }
 
